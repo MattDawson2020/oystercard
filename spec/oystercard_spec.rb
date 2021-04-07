@@ -32,17 +32,19 @@ describe Oystercard do
     end
   end
 
-  context '#deduct' do
-    it 'responds to deduct' do
-      expect(subject).to respond_to(:deduct)
+  context '#touch_out' do
+    it 'responds to touch_out' do
+      expect(subject).to respond_to(:touch_out)
     end
   
-    it 'deduct takes arguments' do
-      expect(subject).to respond_to(:deduct).with(1).arguments
+    it 'deducts from the card on touch out' do
+      subject.touch_in
+      expect { subject.touch_out }.to change { subject.balance }.by -(::MIN_FARE)
     end
   
-    it 'deduct from the card' do
-      expect { subject.deduct 5 }.to change { subject.balance }.by -5
+    it "should raise an error if not enough at least GBP1" do
+      20.times { subject.touch_out }
+      expect { subject.touch_in }.to raise_error("You don't have enough funds")
     end
   end
 
@@ -59,10 +61,5 @@ describe Oystercard do
     subject.touch_in
     subject.touch_out
     expect(subject).not_to be_in_journey
-  end
-
-  it "should raise an error if not enough at least GBP1" do
-    subject.deduct(20)
-    expect { subject.touch_in }.to raise_error("You don't have enough funds")
   end
 end
