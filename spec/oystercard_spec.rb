@@ -47,4 +47,19 @@ describe Oystercard do
     end
   end
 
+  it 'has a default false state' do
+    expect(subject).not_to be_in_journey
+  end
+
+  it 'can be in a journey' do
+    subject.touch_in
+    expect(subject).to be_in_journey
+  end
+
+  it 'a journey can be ended' do
+    subject.touch_in
+    subject.touch_out
+    expect(subject).not_to be_in_journey
+  end
+
 end
