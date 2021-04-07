@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   let(:card) { Oystercard.new }
+  let(:entry_station) {double :station}
 
   context '#balance' do
     it 'responds to balance' do
@@ -38,13 +39,18 @@ describe Oystercard do
     end
   
     it 'deducts from the card on touch out' do
-      subject.touch_in
+      subject.touch_in(entry_station)
       expect { subject.touch_out }.to change { subject.balance }.by -(::MIN_FARE)
     end
   
     it "should raise an error if not enough at least GBP1" do
       20.times { subject.touch_out }
-      expect { subject.touch_in }.to raise_error("You don't have enough funds")
+      expect { subject.touch_in(entry_station) }.to raise_error("You don't have enough funds")
+    end
+
+    it "should nullify the entry_station" do
+      subject.touch_in(entry_station)
+      expect { subject.touch_out }.to change { subject.entry_station }.to nil
     end
   end
 
@@ -53,13 +59,23 @@ describe Oystercard do
   end
 
   it 'can be in a journey' do
-    subject.touch_in
+    subject.touch_in(entry_station)
     expect(subject).to be_in_journey
   end
 
   it 'a journey can be ended' do
-    subject.touch_in
+    subject.touch_in(entry_station)
     subject.touch_out
     expect(subject).not_to be_in_journey
+  end
+
+  context "#touch_in" do
+
+    it "should record the entry station" do
+      subject.touch_in(entry_station)
+      expect(subject.entry_station).to eq(entry_station)
+    end
+
+    it { is_expected.to respond_to(:touch_in).with(1).argument }
   end
 end
