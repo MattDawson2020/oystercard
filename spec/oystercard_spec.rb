@@ -1,3 +1,4 @@
+# need to refactor to replace journey objects inside touch_in/touch_out with doubles/mocks 
 require 'oystercard'
 
 describe Oystercard do
@@ -48,20 +49,22 @@ describe Oystercard do
 
     it 'can store an entry station' do
       subject.touch_in(entry_station)
-      expect(subject.journies).not_to be_empty
+      expect(subject.journies[-1].entry_station).to equal(entry_station)
     end
 
     it 'can store an exit station' do
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
-      expect(subject.journies[-1][:exit_station]).to equal(exit_station)
+      expect(subject.journies[-1].exit_station).to equal(exit_station)
     end
 
-    it 'can store entry and exit as a hash' do
+    it 'can store entry and exit as a journey' do
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
-      expect(subject.journies[-1]).to be_instance_of(Hash)
+      expect(subject.journies[-1]).to be_instance_of(Journey)
     end
+
+    # write test for touch in with no previous touch_out
   end
 
 
@@ -82,6 +85,8 @@ describe Oystercard do
       end
       expect { subject.touch_in(entry_station) }.to raise_error("You don't have enough funds")
     end
+
+    #write test for double touch out
   end
 
   context "#journies" do
