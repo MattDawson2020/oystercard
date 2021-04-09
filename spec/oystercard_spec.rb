@@ -82,7 +82,7 @@ describe Oystercard do
       20.times do
         subject.touch_in(entry_station)
         subject.touch_out(exit_station)
-      end
+      end   
       expect { subject.touch_in(entry_station) }.to raise_error("You don't have enough funds")
     end
 
